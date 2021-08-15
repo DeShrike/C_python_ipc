@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # http://weifan-tmm.blogspot.kr/2015/07/a-simple-turorial-for-python-c-inter.html
 import sysv_ipc
 import numpy as np
@@ -7,13 +6,16 @@ import struct
 BUFF_SIZE = 16
 
 from type_definitions import *
+
 SIZEOF_FLOAT = 8
+SIZEOF_INTEGER = 4
 
 try:
     mq = sysv_ipc.MessageQueue(1234, sysv_ipc.IPC_CREAT)
 
     while True:
         message, mtype = mq.receive()
+        print("")
         print("*** New message received ***")
         print(f"Raw message: {message}")
         if mtype == TYPE_STRING:
@@ -22,6 +24,9 @@ try:
         elif mtype == TYPE_TWODOUBLES:
             two_doubles = struct.unpack("dd", message)
             print(f"Interpret as two doubles: {two_doubles}")
+        elif mtype == TYPE_INTEGER:
+            integer = struct.unpack("i", message[:SIZEOF_INTEGER])[0]
+            print(f"Interpret as integer: {integer}")
         elif mtype == TYPE_NUMPY:
             numpy_message = np.frombuffer(message, dtype=np.int8)
             print(f"Interpret as numpy: {numpy_message}")
